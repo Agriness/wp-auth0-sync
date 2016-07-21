@@ -1,8 +1,21 @@
 <?php
+  date_default_timezone_set('UTC');
 
-  $authorization = "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJoc1I1aFp2Z0xybU14ekt0UWV0RncxcGNDMEZtbGFIVyIsInNjb3BlcyI6eyJ1c2VycyI6eyJhY3Rpb25zIjpbInJlYWQiXX19LCJpYXQiOjE0NjkwMjEzMzYsImp0aSI6ImFjNzlmNDk0NjMzZWEzNWNmMTAzNDQxN2U2ZjZjMGI1In0.vDTt7d1VH4VgtvG0k8epUj9LoTDdw03ei1LDeC2VPpk";
+  $timestamp_meta = 'wp_auth0_sync_timestamp';
+  $today = date('Y-m-d\TH:i:s');
 
-  $url = "https://agriness.auth0.com/api/v2/users?include_totals=true";
+  $check_meta = get_user_meta(1, $timestamp_meta);
+
+  if (empty($check_meta)) {
+    echo "<hr>SALVOU PRIMEIRA<hr>";
+    add_user_meta(1, $timestamp_meta, $today);
+    $timestamp_meta_value = "2000-01-01T00:00:00";
+  } else {
+    $timestamp_meta_value = get_user_meta(1, $timestamp_meta);
+  }
+
+  $authorization = "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJiMTRzU3NGdHBQa1JwV2NZcFd2ZTJTUjljbzVPNUt0aCIsInNjb3BlcyI6eyJ1c2VycyI6eyJhY3Rpb25zIjpbInJlYWQiLCJ1cGRhdGUiXX19LCJpYXQiOjE0NjkwNDM5OTgsImp0aSI6ImZiMTFhNjViN2UzNDViYjVmZmQzNmM5MTMxNGNkYjhhIn0.9mC700rjuQ30SQKvFSqCOCu9LGe4Tmo95OJ0FR1Xbic";
+  $url = "https://agriness-test.auth0.com/api/v2/users?include_totals=true&q=" . urlencode("updated_at:[" . $timestamp_meta_value[0] . " TO *]") . "&search_engine=v2";
 
   $first_connection = curl_init($url);
   curl_setopt($first_connection, CURLOPT_HTTPHEADER, array('Content-Type: application/json' , $authorization));
@@ -13,8 +26,6 @@
 
   $auth0_result = array();
   $auth0_result_total = json_decode($first_result)->total;
-
-  echo $auth0_result_total;
 
   curl_close($first_connection);
 
@@ -57,7 +68,7 @@
 
   for ($i = 0; $i < ceil($auth0_result_total / 100); $i++) {
 
-    $url = "https://agriness.auth0.com/api/v2/users?per_page=10&page=" . $i;
+    $url = "https://agriness-test.auth0.com/api/v2/users?per_page=100&page=" . $i . "&q=" . urlencode("updated_at:[" . $timestamp_meta_value[0] . " TO *]") . "&search_engine=v2";
 
     $connection = curl_init($url);
 
@@ -66,11 +77,19 @@
     curl_setopt($connection, CURLOPT_RETURNTRANSFER, true);
     $result = curl_exec($connection);
 
+    echo $result;
+
     for ($b = 0; $b < count(objectToArray(json_decode($result))); $b++) {
       array_push($auth0_result, objectToArray(json_decode($result))[$b]);
     }
 
     curl_close($connection);
+  }
+
+
+  if ($auth0_result_total > 0) {
+    update_user_meta(1, $timestamp_meta, $today);
+    $timestamp_meta_value = get_user_meta(1, $timestamp_meta);
   }
 
 ?>
