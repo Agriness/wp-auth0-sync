@@ -1,0 +1,1 @@
+# wp-auth0-sync
