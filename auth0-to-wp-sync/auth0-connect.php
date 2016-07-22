@@ -30,18 +30,6 @@
     }
 
 
-    function auth0_curl_get($url, $token) {
-      $authorization = "Authorization: Bearer " . $token;
-      $connection = curl_init($url);
-      curl_setopt($connection, CURLOPT_HTTPHEADER, array('Content-Type: application/json' , $authorization));
-      curl_setopt($connection, CURLOPT_CUSTOMREQUEST, "GET");
-      curl_setopt($connection, CURLOPT_RETURNTRANSFER, true);
-      $result = curl_exec($connection);
-      curl_close($connection);
-      return $result;
-    } // function auth0_curl_get($url)
-
-
     $url = "https://" . $auth0_client . ".auth0.com/api/v2/users?include_totals=true&q=" . urlencode("updated_at:[" . $timestamp_meta_value[0] . " TO *]") . "&search_engine=v2";
 
     $first_result = auth0_curl_get($url, $auth0_token);
