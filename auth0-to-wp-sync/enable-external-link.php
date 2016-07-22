@@ -23,7 +23,7 @@
   add_action('parse_request', 'WPAuth0Sync_parse_request');
   function WPAuth0Sync_parse_request(&$wp) {
     if (array_key_exists('WPAuth0Sync', $wp->query_vars)) {
-      include 'sync.php';
+      include 'auth0-to-wp-sync.php';
       exit();
     }
     return;
