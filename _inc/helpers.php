@@ -27,6 +27,17 @@
     return true;
   }
 
+  function auth0_curl_get($url, $token) {
+    $authorization = "Authorization: Bearer " . $token;
+    $connection = curl_init($url);
+    curl_setopt($connection, CURLOPT_HTTPHEADER, array('Content-Type: application/json' , $authorization));
+    curl_setopt($connection, CURLOPT_CUSTOMREQUEST, "GET");
+    curl_setopt($connection, CURLOPT_RETURNTRANSFER, true);
+    $result = curl_exec($connection);
+    curl_close($connection);
+    return $result;
+  } // function auth0_curl_get($url)
+
 
   // http://www.if-not-true-then-false.com/2009/php-tip-convert-stdclass-object-to-multidimensional-array-and-convert-multidimensional-array-to-stdclass-object/
   function objectToArray($d) {

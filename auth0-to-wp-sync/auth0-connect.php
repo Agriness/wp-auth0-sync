@@ -24,21 +24,9 @@
       add_user_meta(1, $timestamp_meta, $today);
       $timestamp_meta_value = "2000-01-01T00:00:00";
     } else {
-      // $timestamp_meta_value = get_user_meta(1, $timestamp_meta);
-      $timestamp_meta_value = "2000-01-01T00:00:00";
+      $timestamp_meta_value = get_user_meta(1, $timestamp_meta);
+      // $timestamp_meta_value = "2000-01-01T00:00:00";
     }
-
-
-    function auth0_curl_get($url, $token) {
-      $authorization = "Authorization: Bearer " . $token;
-      $connection = curl_init($url);
-      curl_setopt($connection, CURLOPT_HTTPHEADER, array('Content-Type: application/json' , $authorization));
-      curl_setopt($connection, CURLOPT_CUSTOMREQUEST, "GET");
-      curl_setopt($connection, CURLOPT_RETURNTRANSFER, true);
-      $result = curl_exec($connection);
-      curl_close($connection);
-      return $result;
-    } // function auth0_curl_get($url)
 
 
     $url = "https://" . $auth0_client . ".auth0.com/api/v2/users?include_totals=true&q=" . urlencode("updated_at:[" . $timestamp_meta_value[0] . " TO *]") . "&search_engine=v2";
@@ -51,7 +39,7 @@
     if ($first_result_total > 0) {
 
       // for ($i = 0; $i < ceil($first_result_total / 100); $i++) {
-      for ($i = 0; $i < 1; $i++) {
+      for ($i = 0; $i < 2; $i++) {
         $url = "https://" . $auth0_client . ".auth0.com/api/v2/users?per_page=1&page=" . $i . "&q=" . urlencode("updated_at:[" . $timestamp_meta_value[0] . " TO *]") . "&search_engine=v2";
         $result = auth0_curl_get($url, $auth0_token);
         for ($b = 0; $b < count(objectToArray(json_decode($result))); $b++) {
