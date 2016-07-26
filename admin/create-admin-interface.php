@@ -27,14 +27,16 @@
             do_settings_sections('my-setting-admin');
           ?>
 
+
             <input
               id="wp_auth0_sync_client"
               type="text"
               name="wp_auth0_sync[wp_auth0_sync_client]"
               value="<?php echo $wp_auth0_sync_client; ?>"
-              placeholder="Client"
+              placeholder="Domain"
               style="width: 100%;"
             >
+            <div><em>! Sem o ".auth0.com"</em></div>
 
             <hr>
 
@@ -46,6 +48,7 @@
               placeholder="Token"
               style="width: 100%;"
             >
+            <div><em>! Scopes: (user:read, user:update, user:create)</em></div>
 
             <hr>
 
@@ -59,6 +62,13 @@
 
           <?php submit_button(); ?>
         </form>
+
+
+        <hr><hr>
+
+        <button id="WPAuth0SyncManual" style="cursor: pointer;">Sync!</button>
+        <output id="syncstatus" style="margin-left: 10px;"></output>
+
       </div>
     <?php
     }

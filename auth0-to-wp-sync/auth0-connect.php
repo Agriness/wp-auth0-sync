@@ -31,26 +31,44 @@
     $url = "https://" . $auth0_client . ".auth0.com/api/v2/users?include_totals=true&q=" . urlencode("updated_at:[" . $timestamp_meta_value[0] . " TO *]") . "&search_engine=v2";
 
     $first_result = auth0_curl_get($url, $auth0_token);
-    $first_result_total = json_decode($first_result)->total;
 
+    $statusCode = null;
+    $output = array();
     $auth0_result = array();
+    $first_result_total = 0;
 
-    if ($first_result_total > 0) {
+    if (!empty(json_decode($first_result)->statusCode)) {
 
-      for ($i = 0; $i < ceil($first_result_total / 100); $i++) {
-        $url = "https://" . $auth0_client . ".auth0.com/api/v2/users?per_page=100&page=" . $i . "&q=" . urlencode("updated_at:[" . $timestamp_meta_value[0] . " TO *]") . "&search_engine=v2";
-        $result = auth0_curl_get($url, $auth0_token);
-        for ($b = 0; $b < count(objectToArray(json_decode($result))); $b++) {
-          array_push($auth0_result, objectToArray(json_decode($result))[$b]);
+      $statusCode = json_decode($first_result);
+
+    } else {
+
+      $statusCode = 200;
+
+      $first_result_total = json_decode($first_result)->total;
+
+      if ($first_result_total > 0) {
+
+        for ($i = 0; $i < ceil($first_result_total / 100); $i++) {
+          $url = "https://" . $auth0_client . ".auth0.com/api/v2/users?per_page=100&page=" . $i . "&q=" . urlencode("updated_at:[" . $timestamp_meta_value[0] . " TO *]") . "&search_engine=v2";
+          $result = auth0_curl_get($url, $auth0_token);
+          for ($b = 0; $b < count(objectToArray(json_decode($result))); $b++) {
+            array_push($auth0_result, objectToArray(json_decode($result))[$b]);
+          }
         }
-      }
 
-      update_user_meta(1, $timestamp_meta, $today);
-      $timestamp_meta_value = get_user_meta(1, $timestamp_meta);
+        update_user_meta(1, $timestamp_meta, $today);
+        $timestamp_meta_value = get_user_meta(1, $timestamp_meta);
 
-    } // if ($first_result_total > 0)
+      } // if ($first_result_total > 0)
 
-    return $auth0_result;
+    }
+
+    $message = array('status' => $statusCode, 'total' => $first_result_total);
+
+    $output = array('data' => $auth0_result, 'output' => json_encode($message));
+
+    return $output;
 
   } // function auth0_connect()
 

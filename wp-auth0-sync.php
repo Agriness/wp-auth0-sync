@@ -9,12 +9,50 @@
  */
 
   include_once "_inc/helpers.php";
-
   include_once "admin/create-admin-interface.php";
-
   include_once "auth0-to-wp-sync/enable-external-link.php";
-
   include_once "wp-to-auth0-intercept/wp-to-auth0-intercept.php";
+
+
+
+  add_action('admin_enqueue_scripts','jquery');
+  function jquery() {
+    wp_enqueue_script('jquery');
+  }
+
+  add_action('admin_print_scripts', 'WPAuth0SyncManual');
+  function WPAuth0SyncManual() {
+    ?>
+    <script type="text/javascript">
+
+    var everythingLoaded = setInterval(function() {
+      if (/loaded|complete/.test(document.readyState)) {
+        clearInterval(everythingLoaded);
+        var loadingtimeout = setTimeout(function() {
+          jQuery(document).ready(function() {
+            document.querySelector('#WPAuth0SyncManual').addEventListener('click', function(event) {
+              document.querySelector('#WPAuth0SyncManual').disabled = true;
+              document.querySelector('#syncstatus').innerText = "Sincronizando...";
+              jQuery.get("<?php echo get_site_url() . '/?WPAuth0Sync=sync'; ?>", function(response) {
+                document.querySelector('#WPAuth0SyncManual').disabled = true;
+                document.querySelector('#syncstatus').innerText = "Concluído: " + JSON.parse(response).total + " usuário(s) sincronizados.";
+                setTimeout(function() {
+                  document.querySelector('#WPAuth0SyncManual').disabled = false;
+                  document.querySelector('#syncstatus').innerText = "";
+                }, 5000);
+              });
+            });
+          });
+
+          clearTimeout(loadingtimeout);
+        }, 1000);
+      }
+    }, 10);
+
+
+    </script>
+    <?php
+  }
 
 
   add_action('wp_enqueue_scripts', 'Auth0Manager');
@@ -23,42 +61,41 @@
   }
 
 
-  add_action('wp_footer', 'print_my_inline_script');
-  function print_my_inline_script() {
-  ?>
-  <button id="logoutAuth0">LOGOUT</button>
-  <script type="text/javascript">
-    var newAuth0Manager = new Auth0Manager({
-      domain: 'agriness-test.auth0.com',
-      clientID: 's5WUmC8vVehyg3xUn8PgdGnWExjikhr9',
-      queryToken: true
-    });
-
-    newAuth0Manager.init();
-
-    document.querySelector('#logoutAuth0').addEventListener('click', function() {
-      jQuery.post("<?php echo admin_url('admin-ajax.php'); ?>", {
-        'action': 'ajax_wp_auth0_logout'
-      }, function(response) {
-        newAuth0Manager.logout();
+  add_action('wp_footer', 'inlineJs');
+  function inlineJs() {
+    ?>
+    <script type="text/javascript">
+      var newAuth0Manager = new Auth0Manager({
+        domain: 'agriness-test.auth0.com',
+        clientID: 's5WUmC8vVehyg3xUn8PgdGnWExjikhr9',
+        queryToken: true
       });
-    });
 
-    newAuth0Manager.isLoggedIn(function(param) {
-      console.log(param.auth0_userEmail);
+      newAuth0Manager.init();
 
-      jQuery(document).ready(function() {
+      document.querySelector('#logoutAuth0').addEventListener('click', function() {
         jQuery.post("<?php echo admin_url('admin-ajax.php'); ?>", {
-    			'action': 'ajax_wp_auth0_login',
-    			'user_email': param.auth0_userEmail
-    		}, function(response) {
-          if (!response) { location.reload(); }
-    		});
+          'action': 'ajax_wp_auth0_logout'
+        }, function(response) {
+          newAuth0Manager.logout();
+        });
       });
 
-    }); // newAuth0Manager.isLoggedIn(function(param)
-  </script>
-  <?php
+      newAuth0Manager.isLoggedIn(function(param) {
+        console.log(param.auth0_userEmail);
+
+        jQuery(document).ready(function() {
+          jQuery.post("<?php echo admin_url('admin-ajax.php'); ?>", {
+      			'action': 'ajax_wp_auth0_login',
+      			'user_email': param.auth0_userEmail
+      		}, function(response) {
+            if (!response) { location.reload(); }
+      		});
+        });
+
+      }); // newAuth0Manager.isLoggedIn(function(param)
+    </script>
+    <?php
   }
 
 
