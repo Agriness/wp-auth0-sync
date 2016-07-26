@@ -2,7 +2,7 @@
 
   function auth0_connect() {
 
-    /*
+    /**
      * Configurations
      */
     $wp_auth0_sync_options = get_option('wp_auth0_sync');
@@ -10,7 +10,7 @@
     $auth0_client = $wp_auth0_sync_options["wp_auth0_sync_client"];
     $auth0_token = $wp_auth0_sync_options["wp_auth0_sync_token"];
 
-    /*
+    /**
      * Create the timestamp meta
      */
     date_default_timezone_set('UTC');
@@ -25,7 +25,6 @@
       $timestamp_meta_value = "2000-01-01T00:00:00";
     } else {
       $timestamp_meta_value = get_user_meta(1, $timestamp_meta);
-      // $timestamp_meta_value = "2000-01-01T00:00:00";
     }
 
 
@@ -38,9 +37,8 @@
 
     if ($first_result_total > 0) {
 
-      // for ($i = 0; $i < ceil($first_result_total / 100); $i++) {
-      for ($i = 0; $i < 2; $i++) {
-        $url = "https://" . $auth0_client . ".auth0.com/api/v2/users?per_page=1&page=" . $i . "&q=" . urlencode("updated_at:[" . $timestamp_meta_value[0] . " TO *]") . "&search_engine=v2";
+      for ($i = 0; $i < ceil($first_result_total / 100); $i++) {
+        $url = "https://" . $auth0_client . ".auth0.com/api/v2/users?per_page=100&page=" . $i . "&q=" . urlencode("updated_at:[" . $timestamp_meta_value[0] . " TO *]") . "&search_engine=v2";
         $result = auth0_curl_get($url, $auth0_token);
         for ($b = 0; $b < count(objectToArray(json_decode($result))); $b++) {
           array_push($auth0_result, objectToArray(json_decode($result))[$b]);

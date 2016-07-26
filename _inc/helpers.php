@@ -19,6 +19,9 @@
       // User already exists
     } else {
       if (!username_exists($user_object->nickname)) {
+
+        // TODO Create auto nickname
+
         $random_password = wp_generate_password($length = 12, $include_standard_special_chars = false);
         wp_create_user($user_object->nickname, $random_password, $user_object->email);
         // New user was created

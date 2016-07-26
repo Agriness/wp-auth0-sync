@@ -32,4 +32,5 @@
 
   } // foreach (arrayToObject($auth0_result) as $user_key)
 
+wp_footer();
 ?>
