@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Redirecting...</title>
+    <meta name="description" lang="pt-BR" content="...">
+    <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1">
+    <script type="text/javascript">
+
+      function parseSearch(search) {
+        if (!search) return;
+        let searchObject = {};
+        search = search.split('?');
+        search = search[1].split('&');
+        search.forEach((item) => {
+          let objKey = item.split('=');
+          let camelCaseKey = objKey[0].split('_');
+          camelCaseKey = camelCaseKey.map((item) => item.charAt(0).toUpperCase() + item.slice(1));
+          camelCaseKey = camelCaseKey.join('');
+          camelCaseKey = camelCaseKey.charAt(0).toLowerCase() + camelCaseKey.slice(1)
+          console.log(objKey[1]);
+          searchObject[camelCaseKey] = decodeURIComponent(objKey[1].replace(/%22/g, ''));
+        });
+        return searchObject;
+      }
+
+      function parseHash(hash) {
+        if (!hash) return;
+        let hashObject = {};
+        hash = hash.split('#');
+        hash = hash[1].split('&');
+        hash.forEach((item) => {
+          let objKey = item.split('=');
+          let camelCaseKey = objKey[0].split('_');
+          camelCaseKey = camelCaseKey.map((item) => item.charAt(0).toUpperCase() + item.slice(1));
+          camelCaseKey = camelCaseKey.join('');
+          camelCaseKey = camelCaseKey.charAt(0).toLowerCase() + camelCaseKey.slice(1)
+          hashObject[camelCaseKey] = decodeURIComponent(objKey[1]);
+        });
+        return hashObject;
+      }
+
+
+      var params = parseHash(location.hash);
+      var search = parseSearch(location.search);
+
+      location.href = params.state + (search.queryToken ? '?idToken=' + params.idToken : '') + '#access_token=' + params.accessToken + '&id_token=' + params.idToken + '&token_type=' + params.tokenType;
+
+    </script>
+  </head>
+  <body>Redirecting...</body>
+</html>

@@ -15,12 +15,21 @@
   }
 
   function create_user_after_sync($user_object) {
+
+    // If nickname doesn't exist, we create a new one using the email name
+    if (!$user_object->nickname) {
+      $email = explode("@", $user_object->email);
+      $nickname = $email[0];
+    } else {
+      $nickname = $user_object->nickname;
+    }
+
     if (email_exists($user_object->email)) {
       // User already exists
     } else {
-      if (!username_exists($user_object->nickname)) {
+      if (!username_exists($nickname)) {
         $random_password = wp_generate_password($length = 12, $include_standard_special_chars = false);
-        wp_create_user($user_object->nickname, $random_password, $user_object->email);
+        wp_create_user($nickname, $random_password, $user_object->email);
         // New user was created
       }
     }
