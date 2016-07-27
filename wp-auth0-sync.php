@@ -14,6 +14,29 @@
   include_once "wp-to-auth0-intercept/wp-to-auth0-intercept.php";
 
 
+  add_action('init', 'do_login_with_jwt');
+  function do_login_with_jwt() {
+    if(!empty($_GET['idToken'])) {
+
+      $wp_auth0_sync_options = get_option('wp_auth0_sync');
+
+      $auth0_client = $wp_auth0_sync_options["wp_auth0_sync_client"];
+
+      $url = "https://" . $auth0_client . ".auth0.com/tokeninfo?id_token=".$_GET['idToken'];
+      $valid_result = auth0_curl_get($url, $_GET['idToken']);
+
+      $user_email = json_decode($valid_result)->email;
+
+      $user = get_user_by( 'email', $user_email);
+      $user_id = $user->id;
+
+      wp_set_auth_cookie($user_id, true, false );
+      wp_set_current_user($user->ID);
+      //exit;
+    }
+  }
+
+
 
   add_action('admin_enqueue_scripts','jquery');
   function jquery() {
