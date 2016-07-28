@@ -9,15 +9,19 @@
   </head>
 
   <body>
+    <button class="login" name="button">login</button>
+    <button class="logout" name="button">logout</button>
 
     <script src="./scripts/bundle.js"></script>
 
     <script type="text/javascript">
 
+
       var newAuth0Manager = new Auth0Manager({
         domain: 'agriness-test.auth0.com',
         clientID: 'OUUK2zHBp9SIKCB3imRX1x8eBp2kIFR9',
-        queryToken: true
+        loginSelector: '.login',
+        logoutSelector: '.logout'
       });
 
       newAuth0Manager.init();
@@ -26,9 +30,12 @@
         console.log(param);
       });
 
-      console.log(newAuth0Manager);
+      document.querySelector('button').addEventListener('click', function() {
+        newAuth0Manager.logout();
+      });
 
     </script>
+
 
   </body>
 </html>

@@ -18,6 +18,8 @@
       $wp_auth0_sync_client = $options['wp_auth0_sync_client'];
       $wp_auth0_sync_token = $options['wp_auth0_sync_token'];
       $wp_auth0_sync_json = $options['wp_auth0_sync_json'];
+      $wp_auth0_sync_login_selector = $options['wp_auth0_sync_login_selector'];
+      $wp_auth0_sync_logout_selector = $options['wp_auth0_sync_logout_selector'];
     ?>
       <div class="wrap">
         <h2>WP Auth0 Sync - Settings</h2>
@@ -60,6 +62,23 @@
               style="width: 100%; height: 200px;"
             ><?php echo $wp_auth0_sync_json; ?></textarea>
 
+            <hr><hr>
+            Configurar botões
+            <input
+              id="wp_auth0_sync_login_selector"
+              type="text"
+              name="wp_auth0_sync[wp_auth0_sync_login_selector]"
+              value="<?php echo $wp_auth0_sync_login_selector; ?>"
+              placeholder="Seletor de login"
+            >
+            <input
+              id="wp_auth0_sync_logout_selector"
+              type="text"
+              name="wp_auth0_sync[wp_auth0_sync_logout_selector]"
+              value="<?php echo $wp_auth0_sync_logout_selector; ?>"
+              placeholder="Seletor de logout"
+            >
+
           <?php submit_button(); ?>
         </form>
 
@@ -92,6 +111,12 @@
 
       if(isset($input['wp_auth0_sync_json']))
       $temp_input['wp_auth0_sync_json'] = sanitize_text_field($input['wp_auth0_sync_json']);
+
+      if(isset($input['wp_auth0_sync_login_selector']))
+      $temp_input['wp_auth0_sync_login_selector'] = sanitize_text_field($input['wp_auth0_sync_login_selector']);
+
+      if(isset($input['wp_auth0_sync_logout_selector']))
+      $temp_input['wp_auth0_sync_logout_selector'] = sanitize_text_field($input['wp_auth0_sync_logout_selector']);
 
       return $temp_input;
     }

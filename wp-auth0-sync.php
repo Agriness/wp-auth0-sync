@@ -15,16 +15,33 @@
 
 
 
+  add_action('init', 'do_login_with_jwt');
+  function do_login_with_jwt() {
+    $wp_auth0_sync_options = get_option("wp_auth0_sync");
+    $auth0_client = $wp_auth0_sync_options["wp_auth0_sync_client"];
+    if(!empty($_GET['idToken'])) {
+      $url = "https://" . $auth0_client . ".auth0.com/tokeninfo?id_token=".$_GET['idToken'];
+      $valid_result = auth0_curl_get($url, $_GET['idToken']);
+      $user_email = json_decode($valid_result)->email;
+      $user = get_user_by( 'email', $user_email);
+      $user_id = $user->id;
+      wp_set_auth_cookie($user_id, true, false );
+      wp_set_current_user($user->ID);
+      //exit;
+    }
+  }
+
+
   add_action('admin_enqueue_scripts','jquery');
   function jquery() {
     wp_enqueue_script('jquery');
   }
 
+
   add_action('admin_print_scripts', 'WPAuth0SyncManual');
   function WPAuth0SyncManual() {
     ?>
     <script type="text/javascript">
-
     var everythingLoaded = setInterval(function() {
       if (/loaded|complete/.test(document.readyState)) {
         clearInterval(everythingLoaded);
@@ -43,13 +60,10 @@
               });
             });
           });
-
           clearTimeout(loadingtimeout);
         }, 1000);
       }
     }, 10);
-
-
     </script>
     <?php
   }
@@ -63,41 +77,44 @@
 
   add_action('wp_footer', 'inlineJs');
   function inlineJs() {
+    $wp_auth0_sync_options = get_option("wp_auth0_sync");
+    $login_selector = $wp_auth0_sync_options["wp_auth0_sync_login_selector"];
+    $logout_selector = $wp_auth0_sync_options["wp_auth0_sync_logout_selector"];
+
     ?>
+    <button class="login" name="button">login</button>
+    <button class="logout" name="button">logout</button>
+
     <script type="text/javascript">
+
       var newAuth0Manager = new Auth0Manager({
         domain: 'agriness-test.auth0.com',
         clientID: 's5WUmC8vVehyg3xUn8PgdGnWExjikhr9',
-        queryToken: true
+        loginSelector: '<?php echo $login_selector; ?>',
+        logoutSelector: '<?php echo $logout_selector; ?>'
       });
 
       newAuth0Manager.init();
 
-      document.querySelector('#logoutAuth0').addEventListener('click', function() {
-        jQuery.post("<?php echo admin_url('admin-ajax.php'); ?>", {
-          'action': 'ajax_wp_auth0_logout'
-        }, function(response) {
-          newAuth0Manager.logout();
-        });
-      });
+      newAuth0Manager.onLoggedOut(function() {
+        console.log('param.auth0_userEmail');
+      }); // newAuth0Manager.onLoggedOut
 
-      newAuth0Manager.isLoggedIn(function(param) {
+
+      newAuth0Manager.onLoggedIn(function(param) {
         console.log(param.auth0_userEmail);
-
         jQuery(document).ready(function() {
           jQuery.post("<?php echo admin_url('admin-ajax.php'); ?>", {
       			'action': 'ajax_wp_auth0_login',
       			'user_email': param.auth0_userEmail
       		}, function(response) {
-            if (!response) { location.reload(); }
+            // if (response) { location.reload(); }
       		});
         });
-
-      }); // newAuth0Manager.isLoggedIn(function(param)
+      }); // newAuth0Manager.isLoggedIn
     </script>
     <?php
   }
-
 
   // Login User
   add_action('wp_ajax_nopriv_ajax_wp_auth0_login', 'ajax_wp_auth0_login');
@@ -114,7 +131,6 @@
     die();
   } // function ajax_wp_auth0_login
 
-
   // Logout User
   add_action('wp_ajax_nopriv_ajax_wp_auth0_logout', 'ajax_wp_auth0_logout');
   add_action('wp_ajax_ajax_wp_auth0_logout', 'ajax_wp_auth0_logout');
@@ -122,8 +138,7 @@
     wp_logout();
     wp_set_current_user(0);
     wp_clear_auth_cookie();
-    echo 'etaetaeta';
+    echo 'logout';
     die();
   } // function ajax_wp_auth0_logout
-
 ?>
