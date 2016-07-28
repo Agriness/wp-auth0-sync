@@ -14,7 +14,7 @@
   include_once "wp-to-auth0-intercept/wp-to-auth0-intercept.php";
 
 
-  add_action('init', 'do_login_with_jwt');
+  add_action('after_setup_theme', 'do_login_with_jwt', 0);
   function do_login_with_jwt() {
     if(!empty($_GET['idToken'])) {
 
@@ -30,8 +30,9 @@
       $user = get_user_by( 'email', $user_email);
       $user_id = $user->id;
 
-      wp_set_auth_cookie($user_id, true, false );
       wp_set_current_user($user->ID);
+      wp_set_auth_cookie($user_id, true, false );
+
       //exit;
     }
   }
@@ -96,27 +97,28 @@
 
       newAuth0Manager.init();
 
-      document.querySelector('#logoutAuth0').addEventListener('click', function() {
-        jQuery.post("<?php echo admin_url('admin-ajax.php'); ?>", {
-          'action': 'ajax_wp_auth0_logout'
-        }, function(response) {
-          newAuth0Manager.logout();
-        });
-      });
+      // document.querySelector('#logoutAuth0').addEventListener('click', function() {
+      //   jQuery.post("<?php echo admin_url('admin-ajax.php'); ?>", {
+      //     'action': 'ajax_wp_auth0_logout'
+      //   }, function(response) {
+      //     newAuth0Manager.logout();
+      //   });
+      // });
 
-      newAuth0Manager.isLoggedIn(function(param) {
-        console.log(param.auth0_userEmail);
-
-        jQuery(document).ready(function() {
-          jQuery.post("<?php echo admin_url('admin-ajax.php'); ?>", {
-      			'action': 'ajax_wp_auth0_login',
-      			'user_email': param.auth0_userEmail
-      		}, function(response) {
-            if (!response) { location.reload(); }
-      		});
-        });
-
-      }); // newAuth0Manager.isLoggedIn(function(param)
+      // newAuth0Manager.isLoggedIn(function(param) {
+      //   console.log(param.auth0_userEmail);
+      //
+      //   jQuery(document).ready(function() {
+      //     jQuery.post("<?php echo admin_url('admin-ajax.php'); ?>", {
+      // 			'action': 'ajax_wp_auth0_login',
+      // 			'user_email': param.auth0_userEmail
+      // 		}, function(response) {
+      //       if (!response) { location.reload(); }
+      // 		});
+      //   });
+      //
+      // });
+      // newAuth0Manager.isLoggedIn(function(param)
     </script>
     <?php
   }
