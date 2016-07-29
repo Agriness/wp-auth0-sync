@@ -74,6 +74,7 @@
     $wp_auth0_sync_options = get_option("wp_auth0_sync");
     $login_selector = $wp_auth0_sync_options["wp_auth0_sync_login_selector"];
     $logout_selector = $wp_auth0_sync_options["wp_auth0_sync_logout_selector"];
+    $logoutUrl = $wp_auth0_sync_options["wp_auth0_sync_logoutUrl"];
     ?>
 
     <script type="text/javascript">
@@ -82,7 +83,8 @@
         domain: 'agriness-test.auth0.com',
         clientID: 's5WUmC8vVehyg3xUn8PgdGnWExjikhr9',
         loginSelector: '<?php echo $login_selector; ?>',
-        logoutSelector: '<?php echo $logout_selector; ?>'
+        logoutSelector: '<?php echo $logout_selector; ?>',
+        logoutUrl:'<?php echo $logoutUrl; ?>'
       });
 
       newAuth0Manager.init();
