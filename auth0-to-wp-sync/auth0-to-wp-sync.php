@@ -25,6 +25,7 @@
             // Verifica se a chave que vem do auth0 existe no json
             if ($auth0_key === $inner_key) {
               check_user_meta(get_wp_user_object($user_key->email)->ID, $wp_key, $inner_value);
+              break;
             } else {
 
               // Se a meta mapeada no json existir no wordpress ela deve ser removida
@@ -41,17 +42,6 @@
       } // foreach ($user_key as $key=>$value)
 
     } // foreach (json_decode($wp_auth0_sync_json) as $wp_key=>$auth0_key)
-
-    // $all_meta_for_user = array_map(function($a) { return $a[0]; }, get_user_meta(get_wp_user_object($user_key->email)->ID));
-    //
-    // foreach ($all_meta_for_user as $user_key=>$user_meta) {
-    //   echo "<br>";
-    //   echo $user_key . ": ";
-    //   print_r($user_meta);
-    //   echo "<br>";
-    // }
-    //
-    // echo "<hr>";
 
   } // foreach (arrayToObject($auth0_result) as $user_key)
 
