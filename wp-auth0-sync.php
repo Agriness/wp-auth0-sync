@@ -87,30 +87,6 @@
 
       newAuth0Manager.init();
 
-<<<<<<< HEAD
-      // document.querySelector('#logoutAuth0').addEventListener('click', function() {
-      //   jQuery.post("<?php echo admin_url('admin-ajax.php'); ?>", {
-      //     'action': 'ajax_wp_auth0_logout'
-      //   }, function(response) {
-      //     newAuth0Manager.logout();
-      //   });
-      // });
-
-      // newAuth0Manager.isLoggedIn(function(param) {
-      //   console.log(param.auth0_userEmail);
-      //
-      //   jQuery(document).ready(function() {
-      //     jQuery.post("<?php echo admin_url('admin-ajax.php'); ?>", {
-      // 			'action': 'ajax_wp_auth0_login',
-      // 			'user_email': param.auth0_userEmail
-      // 		}, function(response) {
-      //       if (!response) { location.reload(); }
-      // 		});
-      //   });
-      //
-      // });
-      // newAuth0Manager.isLoggedIn(function(param)
-=======
       newAuth0Manager.onLoggedOut(function() {
         console.log('param.auth0_userEmail');
       }); // newAuth0Manager.onLoggedOut
