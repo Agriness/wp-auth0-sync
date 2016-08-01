@@ -79,17 +79,37 @@
 
     <script type="text/javascript">
 
+      function do_logout() {
+        jQuery.post("<?php echo admin_url('admin-ajax.php'); ?>", {
+          'action': 'ajax_wp_auth0_logout'
+        }, function(response) {
+          //newAuth0Manager.logout();
+        });
+      }
+
       var newAuth0Manager = new Auth0Manager({
         domain: 'agriness-test.auth0.com',
         clientID: 's5WUmC8vVehyg3xUn8PgdGnWExjikhr9',
         loginSelector: '<?php echo $login_selector; ?>',
         logoutSelector: '<?php echo $logout_selector; ?>',
-        logoutUrl:'<?php echo $logoutUrl; ?>'
+        logoutUrl:'<?php echo $logoutUrl; ?>',
+        logoutCallback: do_logout
       });
 
       newAuth0Manager.init();
 
       newAuth0Manager.onLoggedOut(function() {
+
+        var loggedInWp = '<?php echo $user = wp_get_current_user()->exists() ?>';
+
+        if(loggedInWp) {
+          jQuery.post("<?php echo admin_url('admin-ajax.php'); ?>", {
+            'action': 'ajax_wp_auth0_logout'
+          }, function(response) {
+            location.reload();
+          });
+        }
+
         console.log('param.auth0_userEmail');
       }); // newAuth0Manager.onLoggedOut
 
