@@ -20,7 +20,11 @@
       $auth0_client = $wp_auth0_sync_options["wp_auth0_sync_client"];
       $url = "https://" . $auth0_client . ".auth0.com/tokeninfo?id_token=".$_GET['idToken'];
       $valid_result = auth0_curl_get($url, $_GET['idToken']);
+
       $user_email = json_decode($valid_result)->email;
+
+      create_user_after_sync(json_decode($valid_result));
+
       $user = get_user_by( 'email', $user_email);
       $user_id = $user->id;
       wp_set_current_user($user->ID);
