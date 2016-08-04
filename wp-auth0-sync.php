@@ -70,7 +70,7 @@
 
   add_action('wp_enqueue_scripts', 'Auth0Manager');
   function Auth0Manager() {
-    wp_enqueue_script('Auth0Manager', plugin_dir_url( __FILE__ ) . '/Auth0Manager/scripts/bundle.js', null, true, false);
+    wp_enqueue_script('Auth0Manager', 'http://cdn.central.agriness.com/agrinessAuth0Manager.min.jss', null, true, false);
   }
 
   add_action('wp_footer', 'inlineJs');
