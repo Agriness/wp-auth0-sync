@@ -22,7 +22,10 @@
 
       if (!username_exists($nickname)) {
         $random_password = wp_generate_password($length = 12, $include_standard_special_chars = false);
-        wp_create_user($nickname, $random_password, $user_object->email);
+        $user_id = wp_create_user($nickname, $random_password, $user_object->email);
+        $display_name = $user_object->user_metadata->nome ?: $user_object->name;
+        
+        wp_update_user(array( 'ID' => $user_id, 'display_name' => $display_name ) );
       }
     }
     return true;
