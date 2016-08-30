@@ -28,7 +28,7 @@
       $user = get_user_by( 'email', $user_email);
       $user_id = $user->id;
       wp_set_current_user($user->ID);
-      wp_set_auth_cookie($user_id, false, false );
+      wp_set_auth_cookie($user_id, true, false );
       //exit;
     }
   }
